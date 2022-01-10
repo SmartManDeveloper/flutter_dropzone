@@ -10,7 +10,43 @@ import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 import 'method_channel_flutter_dropzone.dart';
 
 enum DragOperation { copy, move, link, copyMove, copyLink, linkMove, all }
-enum CursorType { alias, all_scroll, auto, cell, context_menu, col_resize, copy, crosshair, Default, e_resize, ew_resize, grab, grabbing, help, move, n_resize, ne_resize, nesw_resize, ns_resize, nw_resize, nwse_resize, no_drop, none, not_allowed, pointer, progress, row_resize, s_resize, se_resize, sw_resize, text, w_resize, wait, zoom_in, zoom_out }
+enum CursorType {
+  alias,
+  all_scroll,
+  auto,
+  cell,
+  context_menu,
+  col_resize,
+  copy,
+  crosshair,
+  Default,
+  e_resize,
+  ew_resize,
+  grab,
+  grabbing,
+  help,
+  move,
+  n_resize,
+  ne_resize,
+  nesw_resize,
+  ns_resize,
+  nw_resize,
+  nwse_resize,
+  no_drop,
+  none,
+  not_allowed,
+  pointer,
+  progress,
+  row_resize,
+  s_resize,
+  se_resize,
+  sw_resize,
+  text,
+  w_resize,
+  wait,
+  zoom_in,
+  zoom_out
+}
 
 abstract class FlutterDropzonePlatform extends PlatformInterface {
   static final _token = Object();
@@ -128,6 +164,13 @@ abstract class FlutterDropzonePlatform extends PlatformInterface {
         .cast<DropzoneDropEvent>();
   }
 
+  /// Event called when the user drops multiple files onto the dropzone.
+  Stream<DropzoneDropMultipleEvent> onDropMultiple({required int viewId}) {
+    return events.stream //
+        .where((event) => event.viewId == viewId && event is DropzoneDropMultipleEvent)
+        .cast<DropzoneDropMultipleEvent>();
+  }
+
   /// Event called when the user leaves a dropzone.
   Stream<DropzoneLeaveEvent> onLeave({required int viewId}) {
     return events.stream //
@@ -136,7 +179,8 @@ abstract class FlutterDropzonePlatform extends PlatformInterface {
   }
 
   /// Internal function to build the platform view.
-  Widget buildView(Map<String, dynamic> creationParams, Set<Factory<OneSequenceGestureRecognizer>>? gestureRecognizers, PlatformViewCreatedCallback onPlatformViewCreated) {
+  Widget buildView(Map<String, dynamic> creationParams, Set<Factory<OneSequenceGestureRecognizer>>? gestureRecognizers,
+      PlatformViewCreatedCallback onPlatformViewCreated) {
     throw UnimplementedError('buildView');
   }
 
@@ -170,6 +214,11 @@ class DropzoneHoverEvent extends DropzoneEvent {
 /// Event called when the user drops a file onto the dropzone.
 class DropzoneDropEvent extends DropzoneEvent<dynamic> {
   DropzoneDropEvent(int viewId, dynamic file) : super(viewId, file);
+}
+
+/// Event called when the user drops a file onto the dropzone.
+class DropzoneDropMultipleEvent extends DropzoneEvent<List<dynamic>> {
+  DropzoneDropMultipleEvent(int viewId, List<dynamic> files) : super(viewId, files);
 }
 
 /// Event called when the user leaves a dropzone.

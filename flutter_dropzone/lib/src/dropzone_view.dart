@@ -28,7 +28,10 @@ class DropzoneView extends StatefulWidget {
   final VoidCallback? onHover;
 
   /// Event called when the user drops a file onto the dropzone.
-  final ValueChanged<dynamic> onDrop;
+  final ValueChanged<dynamic>? onDrop;
+
+  /// Event called when the user drops multiple files onto the dropzone.
+  final void Function(List<dynamic>? value)? onDropMultiple;
 
   /// Event called when the user leaves a dropzone.
   final VoidCallback? onLeave;
@@ -43,7 +46,8 @@ class DropzoneView extends StatefulWidget {
     this.onLoaded,
     this.onError,
     this.onHover,
-    required this.onDrop,
+    this.onDrop,
+    this.onDropMultiple,
     this.onLeave,
   }) : super(key: key);
 
@@ -90,9 +94,14 @@ class DropzoneViewController {
           .onHover(viewId: viewId)
           .listen((msg) => widget.onHover!());
     }
-    FlutterDropzonePlatform.instance //
-        .onDrop(viewId: viewId)
-        .listen((msg) => widget.onDrop(msg.value));
+    if (widget.onDrop != null)
+      FlutterDropzonePlatform.instance //
+          .onDrop(viewId: viewId)
+          .listen((msg) => widget.onDrop!(msg.value));
+    if (widget.onDropMultiple != null)
+      FlutterDropzonePlatform.instance //
+          .onDropMultiple(viewId: viewId)
+          .listen((msg) => widget.onDropMultiple!(msg.value));
     if (widget.onLeave != null) {
       FlutterDropzonePlatform.instance //
           .onLeave(viewId: viewId)
